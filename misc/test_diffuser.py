@@ -2,6 +2,11 @@
 #   python misc/test_diffuser.py
 from diffusers import DiffusionPipeline
 
+# Other public options are `CompVis/ldm-text2im-large-256`, `CompVis/ldm-celebahq-256`
+# Other private options are
+#   `CompVis/stable-diffusion-v1-1-diffusers`
+#   `CompVis/stable-diffusion-v1-2-diffusers`,
+#   `CompVis/stable-diffusion-v1-3-diffusers`,
 model_id = "CompVis/stable-diffusion-v-1-3"
 
 # To use the stable diffusion private models
