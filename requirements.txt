@@ -1,0 +1,8 @@
+transformers
+torch
+numpy
+scipy
+matplotlib
+diffusers
+huggingface-hub
+git+https://github.com/lxuechen/ml-swissknife.git
