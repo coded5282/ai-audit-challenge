@@ -7,7 +7,7 @@ from diffusers import DiffusionPipeline
 #   `CompVis/stable-diffusion-v1-1-diffusers`
 #   `CompVis/stable-diffusion-v1-2-diffusers`,
 #   `CompVis/stable-diffusion-v1-3-diffusers`,
-model_id = "CompVis/stable-diffusion-v-1-3"
+model_id = "CompVis/stable-diffusion-v1-3-diffusers"
 
 # To use the stable diffusion private models
 #   1. accept being invited into their CompVis org; details in email thread.
@@ -28,7 +28,7 @@ images = ldm([prompt], num_inference_steps=50, eta=0.3, guidance_scale=6)["sampl
 for idx, image in enumerate(images):
     image.save(f"squirrel-{idx}.png")
 
-prompt = "An astronaut in space studying machine learning"
+prompt = "An astronaut eating hamburger in Texas"
 images = ldm([prompt], num_inference_steps=50, eta=0.3, guidance_scale=6)["sample"]
 
 # save images
