@@ -1,19 +1,18 @@
 import streamlit as st
-import data as data
+from page_initialize_settings import page_initialize_settings
+from page_perform_audit import page_perform_audit
+from page_audit_report import page_audit_report
 
-print("Starting new page")
-
+print("Starting new page!")
 st.set_page_config(layout="wide")
 
-st.title("Protected Categories")
+# Initialize session state
+if "current_page" not in st.session_state:
+    st.session_state.current_page = 'initialize_settings'
 
-print(data.PROTECTED_CATEGORIES_DICT)
-
-col1, col2, col3 = st.columns((2, 1, 1))
-
-# Display the protected groups/subgroups
-with col1:
-    for group, subgroups in data.PROTECTED_CATEGORIES_DICT.items():
-        st.write(group)
-        for subgroup in subgroups:
-            st.checkbox(subgroup)
+if st.session_state.current_page == 'initialize_settings':
+    page_initialize_settings()
+elif st.session_state.current_page == 'perform_audit':
+    page_perform_audit()
+elif st.session_state.current_page == 'audit_report':
+    page_audit_report()
