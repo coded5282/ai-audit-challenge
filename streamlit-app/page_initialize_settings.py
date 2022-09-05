@@ -1,8 +1,13 @@
 import streamlit as st
 import data as data
 
+# On click functions
+def start_audit_on_click():
+    st.session_state.current_page = 'perform_audit'
+
+# Page display function
 def page_initialize_settings():
-    st.title("AI Audit")
+    st.title("AI Audit Settings")
     st.header("Model: {}".format(data.MODEL_TO_TEST))
 
     col1, col2, col3 = st.columns((1, 1, 1))
@@ -35,4 +40,4 @@ def page_initialize_settings():
         st.markdown('#')
         st.markdown('#')
         st.markdown('#')
-        st.button('Start Audit')
+        st.button('Start Audit', on_click=start_audit_on_click)

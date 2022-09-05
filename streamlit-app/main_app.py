@@ -10,6 +10,7 @@ st.set_page_config(layout="wide")
 if "current_page" not in st.session_state:
     st.session_state.current_page = 'initialize_settings'
 
+# Display the current page
 if st.session_state.current_page == 'initialize_settings':
     page_initialize_settings()
 elif st.session_state.current_page == 'perform_audit':
