@@ -1,0 +1,1 @@
+# File to store various settings/constants for the app
