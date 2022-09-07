@@ -1,3 +1,4 @@
 .hf_token
 .idea/
 __pycache__/
+*.pkl
