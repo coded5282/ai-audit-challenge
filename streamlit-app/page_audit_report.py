@@ -11,6 +11,7 @@ def page_audit_report():
     selected_groups_list = list(st.session_state.protected_groups.keys())
     tabs_list = st.tabs(selected_groups_list)
     for tab_idx, curr_tab in enumerate(tabs_list):
+
         curr_group = selected_groups_list[tab_idx]
         num_subgroups = len(st.session_state.protected_groups[curr_group])
         curr_subgroups = list(st.session_state.protected_groups[curr_group].keys())
