@@ -12,7 +12,7 @@ if "current_page" not in st.session_state:
     st.session_state.current_page = 'initialize_settings'
 
 # TEMPORARY: Load prompt data from pickle files
-st.session_state['prompt_data'] = data.load_prompt_data()
+# st.session_state['prompt_data'] = data.load_prompt_data()
 
 # Display the current page
 if st.session_state.current_page == 'initialize_settings':
