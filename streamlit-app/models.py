@@ -7,7 +7,7 @@ openai.api_key = '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'
 # params for generation
 device_g = 'cpu'
 device_c = 'cpu'
-NOUT_PER_PROMPT = 1
+NOUT_PER_PROMPT = 5
 MAX_TOKENS_PER_PROMPT = 20
 NUM_BEAMS = 5
 BS = 2
