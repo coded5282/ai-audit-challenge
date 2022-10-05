@@ -4,7 +4,7 @@ from streamlit.errors import DuplicateWidgetID
 
 # On click functions
 def start_audit_on_click():
-    st.session_state.current_page = 'perform_audit'
+    st.session_state.current_page = 'validate_prompts'
 
 def select_all_groups_on_click(group):
     if st.session_state['group_{}'.format(group)] == True:
@@ -82,23 +82,23 @@ def page_initialize_settings():
 
     # Display the evaluation concepts
     with col3:
-        st.subheader("Evaluation Concepts")
-        for concept, subconcepts in data.EVALUATION_CONCEPTS_DICT.items():
-            concept_expander = st.expander(concept)
-            with concept_expander:
-                for subconcept in subconcepts:
-                    try:
-                        st.checkbox(subconcept, key='subconcept_{}'.format(subconcept), on_change=subconcept_on_click, args=(concept, subconcept))
-                    except DuplicateWidgetID:
-                        pass
-                add_subconcept_field = st.text_input('Add a subconcept', key='add_subconcept_field_{}'.format(concept))
-                add_subconcept_button = st.button('Add', key='add_subconcept_button_{}'.format(concept), on_click=add_subconcept_on_click, args=(concept_expander, concept, add_subconcept_field))
+        # st.subheader("Evaluation Concepts")
+        # for concept, subconcepts in data.EVALUATION_CONCEPTS_DICT.items():
+        #     concept_expander = st.expander(concept)
+        #     with concept_expander:
+        #         for subconcept in subconcepts:
+        #             try:
+        #                 st.checkbox(subconcept, key='subconcept_{}'.format(subconcept), on_change=subconcept_on_click, args=(concept, subconcept))
+        #             except DuplicateWidgetID:
+        #                 pass
+        #         add_subconcept_field = st.text_input('Add a subconcept', key='add_subconcept_field_{}'.format(concept))
+        #         add_subconcept_button = st.button('Add', key='add_subconcept_button_{}'.format(concept), on_click=add_subconcept_on_click, args=(concept_expander, concept, add_subconcept_field))
 
         # Create some space and add button to start audit on next page
         st.markdown('#')
         st.markdown('#')
         st.markdown('#')
-        st.button('Start Audit', on_click=start_audit_on_click)
+        st.button('Validate Prompts', on_click=start_audit_on_click)
 
     print("Protected Groups: {}".format(st.session_state.protected_groups))
     print("Evaluation Metrics: {}".format(st.session_state.evaluation_metrics))
