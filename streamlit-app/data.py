@@ -10,8 +10,11 @@ from bokeh.transform import cumsum
 from textblob import TextBlob
 import re
 import nltk
-nltk.download('punkt')
-nltk.download('averaged_perceptron_tagger')
+from zeugma.embeddings import EmbeddingTransformer
+import os
+DOWNLOAD_DIR = '/dfs/scratch0/edjchen'
+nltk.download('punkt', download_dir=DOWNLOAD_DIR)
+nltk.download('averaged_perceptron_tagger', download_dir=DOWNLOAD_DIR)
 
 MODEL_TO_TEST = 'GPT-3'
 
@@ -117,6 +120,26 @@ def load_prompt_data(protected_groups_dict):
             prompt_data[protected_group][subgroup]['adjectives'] = list(set(all_adjectives))
 
     return prompt_data
+
+def load_prompt_data_pkl_v2():
+    with open('/lfs/hyperturing1/0/edjchen/ai-audit-challenge/misc/results_resto_american_chinese.pkl', 'rb') as f:
+        prompt_data = pickle.load(f)
+    return prompt_data
+
+def obtain_prompt_data_embeddings():
+    glove = EmbeddingTransformer('glove')
+    prompt_data = []
+    for prompt_dict in st.session_state['prompt_data']:
+        full_prompt = prompt_dict['prompt_1']
+        full_prompt = full_prompt.replace('American', '')
+        full_prompt = full_prompt.replace('Chinese', '')
+        full_prompt = full_prompt.replace('America', '')
+        full_prompt = full_prompt.replace('China', '')
+        prompt_data.append(full_prompt)
+    bank_embeds = glove.transform(prompt_data)
+    bank_embeds = bank_embeds / np.linalg.norm(bank_embeds, axis=-1)[:, None]
+    print("Embeddings shape: {}".format(bank_embeds.shape))
+    return bank_embeds
 
 def load_prompt_data_pkl():
     # with open(f'../results_final_basketball_.pkl', 'rb') as f:

@@ -13,12 +13,29 @@ def back_to_settings_on_click():
 def go_to_report_on_click():
     st.session_state.current_page = 'audit_report'
 
+# for the ranking-based user choices
 def curr_tab_next_on_click(curr_group, curr_subgroups):
     st.session_state.curr_prompt_idx += 1
     # Store user ranking
     for i in range(len(curr_subgroups)):
         curr_rank = st.session_state['rank_{}_{}'.format(i, curr_group)]
         st.session_state.user_ranks[curr_group][curr_subgroups[i]].append(curr_rank)
+
+def curr_preference_on_click(score, curr_group, curr_subgroups):
+    if 'active_learning_algo' not in st.session_state:
+        raise Exception('Active learning algorithm not specified')
+    st.session_state['curr_prompt_idx'] = st.session_state['active_learning_algo'].next_sample()
+    st.session_state['active_learning_algo'].update(st.session_state['curr_prompt_idx'])
+    # TEMPORARY
+    if score == 0: # left
+        st.session_state.user_ranks[curr_group][curr_subgroups[0]].append(1)
+        st.session_state.user_ranks[curr_group][curr_subgroups[1]].append(0)
+    elif score == 1: # right
+        st.session_state.user_ranks[curr_group][curr_subgroups[0]].append(0)
+        st.session_state.user_ranks[curr_group][curr_subgroups[1]].append(1)
+    elif score == -1: # equals
+        st.session_state.user_ranks[curr_group][curr_subgroups[0]].append(0)
+        st.session_state.user_ranks[curr_group][curr_subgroups[1]].append(0)
 
 # Helper functions
 def select_random_subset(adjectives_list, subset_len=3):
@@ -53,6 +70,31 @@ def respond_and_score(texts_1, g, c):
     v1s = v1s.reshape(N, models.NOUT_PER_PROMPT).mean(axis=-1)
     
     return v1s, texts_1, generated_1_raw, classifier_scores
+
+# when iterating over name/adjective restaurant reviews
+def obtain_prompt_responses_and_scores_v1(curr_group, curr_subgroup):
+    curr_name = st.session_state['prompt_data'][curr_group][curr_subgroup]['names'][st.session_state.curr_prompt_idx]
+    adjs_list = select_random_subset(st.session_state['prompt_data'][curr_group][curr_subgroup]['adjectives'])
+    full_prompt = create_restaurant_review_prompt(curr_name, adjs_list)
+    response_metric, _, model_response, classifier_scores = respond_and_score([full_prompt], st.session_state.eval_model, st.session_state.auto_classifier)
+    model_response = [model_response[0][i] for i in range(len(model_response[0]))]
+    num_responses = len(model_response)
+    return classifier_scores, model_response, num_responses, response_metric
+
+def obtain_prompt_responses_and_scores_v2(curr_group, curr_subgroup, subgroup_idx):
+    full_prompt = st.session_state['prompt_data'][st.session_state.curr_prompt_idx]['prompt_{}'.format(subgroup_idx+1)]
+    response_metric, _, model_response, classifier_scores = respond_and_score([full_prompt], st.session_state.eval_model, st.session_state.auto_classifier)
+    model_response = [model_response[0][i] for i in range(len(model_response[0]))]
+    num_responses = len(model_response)
+    return classifier_scores, model_response, num_responses, response_metric
+
+# without automated classifier
+def obtain_prompt_responses_and_scores_v3(curr_group, curr_subgroup, subgroup_idx):
+    full_prompt = st.session_state['prompt_data'][st.session_state.curr_prompt_idx]['prompt_{}'.format(subgroup_idx+1)]
+    model_response = st.session_state['prompt_data'][st.session_state.curr_prompt_idx]['responses_{}'.format(subgroup_idx+1)] # list of responses
+    num_responses = len(model_response)
+    classifier_scores = list(st.session_state['prompt_data'][st.session_state.curr_prompt_idx]['toxicity_{}'.format(subgroup_idx+1)][0])
+    return classifier_scores, model_response, num_responses, None
 
 def create_restaurant_review_prompt(name, adjs_list):
     prompt = 'Write a restaurant review based on these notes:\n\n'
@@ -102,11 +144,12 @@ def page_perform_audit():
             st.session_state.user_ranks[curr_group] = {}
         # the number of subgroups for the current group represents the number of prompts to display
         curr_subgroups = list(st.session_state.protected_groups[curr_group].keys())
-        num_prompts = len(curr_subgroups)
+        # num_prompts = len(curr_subgroups)
+        num_prompts = 2
         col1, col2, col3 = curr_tab.columns((2, 0.5, 2))
-        col2.button('Left')
-        col2.button('Equal')
-        col2.button('Right')
+        col2.button('Left', on_click=curr_preference_on_click, args=(0, curr_group, curr_subgroups))
+        col2.button('Equal', on_click=curr_preference_on_click, args=(-1, curr_group, curr_subgroups))
+        col2.button('Right', on_click=curr_preference_on_click, args=(1, curr_group, curr_subgroups))
         for i in range(num_prompts):
             curr_subgroup = curr_subgroups[i]
             if curr_subgroups[i] not in st.session_state.user_ranks[curr_group]:
@@ -114,22 +157,20 @@ def page_perform_audit():
             # TODO: Replace with generated prompts
             with st.container():
                 # cycle_through_all_prompts(curr_group, curr_subgroup) # TEMPORARY SOLUTION
-                curr_name = st.session_state['prompt_data'][curr_group][curr_subgroup]['names'][st.session_state.curr_prompt_idx]
-                adjs_list = select_random_subset(st.session_state['prompt_data'][curr_group][curr_subgroup]['adjectives'])
-                full_prompt = create_restaurant_review_prompt(curr_name, adjs_list)
-                response_metric, _, model_response, classifier_scores = respond_and_score([full_prompt], st.session_state.eval_model, st.session_state.auto_classifier)
-                num_responses = len(model_response[0])
-                automated_scores_fig = create_automated_score_plot(classifier_scores, curr_subgroup)
+                # classifier_scores, model_response, num_responses, response_metric = obtain_prompt_responses_and_scores_v1(curr_group, curr_subgroup)
+                # classifier_scores, model_response, num_responses, response_metric = obtain_prompt_responses_and_scores_v2(curr_group, curr_subgroup, i)
+                classifier_scores, model_response, num_responses, _ = obtain_prompt_responses_and_scores_v3(curr_group, curr_subgroup, i)
 
+                automated_scores_fig = create_automated_score_plot(classifier_scores, curr_subgroup)
                 # TEMPORARY: Currently only taking into consideration automated metrics, but should use user rank later
-                st.session_state.user_ranks[curr_group][curr_subgroup].append(int(response_metric*100))
+                # st.session_state.user_ranks[curr_group][curr_subgroup].append(int(response_metric*100))
                 if i == 0: # prompt on the left
                     for response_idx in range(num_responses):
-                        col1.write('{}. {}'.format(response_idx+1, model_response[0][response_idx]))
+                        col1.write('{}. {}'.format(response_idx+1, model_response[response_idx]))
                     col1.pyplot(automated_scores_fig)
                 elif i == 1: # prompt on the right
                     for response_idx in range(num_responses):
-                        col3.write('{}. {}'.format(response_idx+1, model_response[0][response_idx]))
+                        col3.write('{}. {}'.format(response_idx+1, model_response[response_idx]))
                     col3.pyplot(automated_scores_fig)
                 # col2.metric(label='Automated Score', value=response_metric)
                 # curr_rank = col3.selectbox('Rank', [1, 2], key='rank_{}_{}'.format(i, curr_group))

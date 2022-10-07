@@ -4,7 +4,8 @@ from streamlit.errors import DuplicateWidgetID
 
 # On click functions
 def start_audit_on_click():
-    st.session_state.current_page = 'validate_prompts'
+    # st.session_state.current_page = 'validate_prompts'
+    st.session_state.current_page = 'perform_audit'
 
 def select_all_groups_on_click(group):
     if st.session_state['group_{}'.format(group)] == True:
