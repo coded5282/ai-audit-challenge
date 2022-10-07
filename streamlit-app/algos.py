@@ -82,10 +82,10 @@ class CosineSimFit(CurveFittingAlgo):
 
     def fit_and_predict(self, label_of_interest, subgroup_of_interest, min_cos_sim):
         """
-        given a binary label L of interest (int)
-        fetches the neighborhood around every point with label L
-        excludes points that falll in the neighborhood of the composite label L-1
-        returns a master list of all points to which label L was 'propagatable'
+        given a binary label L of interest (int) and a subgroup of interest (string)
+        fetches the neighborhood around every point with label L for that subgroup
+        excludes points that fall in the neighborhood of other (label, subgroup) pairs
+        returns a master list of all points to which label (L, subgroup_of_interest) was 'propagatable'
         """
         
         # included idxs
