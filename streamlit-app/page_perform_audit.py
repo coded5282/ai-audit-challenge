@@ -24,18 +24,20 @@ def curr_tab_next_on_click(curr_group, curr_subgroups):
 def curr_preference_on_click(score, curr_group, curr_subgroups):
     if 'active_learning_algo' not in st.session_state:
         raise Exception('Active learning algorithm not specified')
+    if score == 0: # left
+        st.session_state.idx2labels[curr_group][curr_subgroups[0]][st.session_state.curr_prompt_idx] = (1, curr_subgroups[0])
+        st.session_state.idx2labels[curr_group][curr_subgroups[1]][st.session_state.curr_prompt_idx] = (0, curr_subgroups[1])
+    elif score == 1: # right
+        st.session_state.idx2labels[curr_group][curr_subgroups[0]][st.session_state.curr_prompt_idx] = (0, curr_subgroups[0])
+        st.session_state.idx2labels[curr_group][curr_subgroups[1]][st.session_state.curr_prompt_idx] = (1, curr_subgroups[1])
+    elif score == -1: # equals
+        st.session_state.idx2labels[curr_group][curr_subgroups[0]][st.session_state.curr_prompt_idx] = (0, curr_subgroups[0])
+        st.session_state.idx2labels[curr_group][curr_subgroups[1]][st.session_state.curr_prompt_idx] = (0, curr_subgroups[1])
+
     st.session_state['curr_prompt_idx'] = st.session_state['active_learning_algo'].next_sample()
     st.session_state['active_learning_algo'].update(st.session_state['curr_prompt_idx'])
-    # TEMPORARY
-    if score == 0: # left
-        st.session_state.user_ranks[curr_group][curr_subgroups[0]].append(1)
-        st.session_state.user_ranks[curr_group][curr_subgroups[1]].append(0)
-    elif score == 1: # right
-        st.session_state.user_ranks[curr_group][curr_subgroups[0]].append(0)
-        st.session_state.user_ranks[curr_group][curr_subgroups[1]].append(1)
-    elif score == -1: # equals
-        st.session_state.user_ranks[curr_group][curr_subgroups[0]].append(0)
-        st.session_state.user_ranks[curr_group][curr_subgroups[1]].append(0)
+    print("CURRENT PROMPT INDEX: {}".format(st.session_state['curr_prompt_idx']))
+    print("CURRENT IDX2LABELS: {}".format(st.session_state['idx2labels']))
 
 # Helper functions
 def select_random_subset(adjectives_list, subset_len=3):
@@ -133,15 +135,15 @@ def page_perform_audit():
 
     if 'curr_prompt_idx' not in st.session_state:
         st.session_state.curr_prompt_idx = 0
-    if 'user_ranks' not in st.session_state:
-        st.session_state.user_ranks = {}
+    if 'idx2labels' not in st.session_state:
+        st.session_state.idx2labels = {}
 
     selected_groups_list = list(st.session_state.protected_groups.keys())
     tabs_list = st.tabs(selected_groups_list)
     for tab_idx, curr_tab in enumerate(tabs_list):
         curr_group = selected_groups_list[tab_idx]
-        if curr_group not in st.session_state.user_ranks:
-            st.session_state.user_ranks[curr_group] = {}
+        if curr_group not in st.session_state.idx2labels:
+            st.session_state.idx2labels[curr_group] = {}
         # the number of subgroups for the current group represents the number of prompts to display
         curr_subgroups = list(st.session_state.protected_groups[curr_group].keys())
         # num_prompts = len(curr_subgroups)
@@ -152,8 +154,8 @@ def page_perform_audit():
         col2.button('Right', on_click=curr_preference_on_click, args=(1, curr_group, curr_subgroups))
         for i in range(num_prompts):
             curr_subgroup = curr_subgroups[i]
-            if curr_subgroups[i] not in st.session_state.user_ranks[curr_group]:
-                st.session_state.user_ranks[curr_group][curr_subgroup] = []
+            if curr_subgroups[i] not in st.session_state.idx2labels[curr_group]:
+                st.session_state.idx2labels[curr_group][curr_subgroup] = {}
             # TODO: Replace with generated prompts
             with st.container():
                 # cycle_through_all_prompts(curr_group, curr_subgroup) # TEMPORARY SOLUTION
