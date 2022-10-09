@@ -235,19 +235,28 @@ def plot_scores_for_group(scores_dict, curr_group):
     p.grid.grid_line_color = None
     return p
 
-def plot_scores_for_subgroup(overall_scores, group, subgroup, num_bins=5):
-    # Obtain overall min and max scores (across all subgroups)
-    scores_min = np.max(overall_scores[group][subgroup])
-    scores_max = np.min(overall_scores[group][subgroup])
-    for each_subgroup in overall_scores[group]:
-        curr_min = np.min(overall_scores[group][each_subgroup])
-        curr_max = np.max(overall_scores[group][each_subgroup])
-        if curr_min < scores_min:
-            scores_min = curr_min
-        if curr_max > scores_max:
-            scores_max = curr_max
+# def plot_scores_for_subgroup(overall_scores, group, subgroup, num_bins=5):
+#     # Obtain overall min and max scores (across all subgroups)
+#     scores_min = np.max(overall_scores[group][subgroup])
+#     scores_max = np.min(overall_scores[group][subgroup])
+#     for each_subgroup in overall_scores[group]:
+#         curr_min = np.min(overall_scores[group][each_subgroup])
+#         curr_max = np.max(overall_scores[group][each_subgroup])
+#         if curr_min < scores_min:
+#             scores_min = curr_min
+#         if curr_max > scores_max:
+#             scores_max = curr_max
 
-    hist, edges = np.histogram(overall_scores[group][subgroup], range=(scores_min, scores_max))
+#     hist, edges = np.histogram(overall_scores[group][subgroup], range=(scores_min, scores_max))
+#     p = figure(height=350, title="Histogram", toolbar_location=None,
+#             tools="hover", tooltips="@country: @value")
+#     p.quad(top=hist, bottom=0, left=edges[:-1], right=edges[1:], line_color="white")
+#     return p
+
+def plot_scores_for_subgroup(overall_scores, num_bins=5):
+    # hist, edges = np.histogram(overall_scores, range=(scores_min, scores_max))
+    hist, edges = np.histogram(overall_scores, bins=[0, 0.35, 0.7, 1])
+    hist = hist / len(overall_scores) # normalize over total count (for easier comparison between groups)
     p = figure(height=350, title="Histogram", toolbar_location=None,
             tools="hover", tooltips="@country: @value")
     p.quad(top=hist, bottom=0, left=edges[:-1], right=edges[1:], line_color="white")

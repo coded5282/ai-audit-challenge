@@ -19,7 +19,7 @@ if "current_page" not in st.session_state:
 
 # TEMPORARY: Load prompt data from pickle files
 # st.session_state['prompt_data'] = data.load_prompt_data()
-st.session_state['auto_classifier'] = automated_classifiers.get_auto_classifier('Toxicity')
+# st.session_state['auto_classifier'] = automated_classifiers.get_auto_classifier('Toxicity')
 
 # Display the current page
 if st.session_state.current_page == 'initialize_settings':
@@ -29,12 +29,14 @@ elif st.session_state.current_page == 'validate_prompts':
     page_validate_prompts()
 elif st.session_state.current_page == 'perform_audit':
     # TODO: For now, is only using the first evaluation metric
-    st.session_state['prompt_data'] = data.load_prompt_data_pkl_v2() # TEMPORARY
-    st.session_state['prompt_data_embeddings'] = data.obtain_prompt_data_embeddings() # TEMPORARY
-    st.session_state['active_learning_algo'] = algos.EmbeddingsSampling(st.session_state['prompt_data_embeddings'])
-
-    # st.session_state['auto_classifier'] = automated_classifiers.get_auto_classifier(st.session_state.evaluation_metrics[0])
-    st.session_state['eval_model'] = models.get_eval_model()
+    if 'prompt_data' not in st.session_state:
+        st.session_state['prompt_data'] = data.load_prompt_data_pkl_v2() # TEMPORARY
+        st.session_state['prompt_data_embeddings'] = data.obtain_prompt_data_embeddings() # TEMPORARY
+        st.session_state['active_learning_algo'] = algos.EmbeddingsSampling(st.session_state['prompt_data_embeddings'])
+        st.session_state['active_learning_algo'].update(0)
+        st.session_state['curve_fitting_algo'] = algos.CosineSimFit(st.session_state['prompt_data_embeddings'])
+        st.session_state['auto_classifier'] = automated_classifiers.get_auto_classifier(st.session_state.evaluation_metrics[0])
+        st.session_state['eval_model'] = models.get_eval_model()
     page_perform_audit()
 elif st.session_state.current_page == 'audit_report':
     page_audit_report()

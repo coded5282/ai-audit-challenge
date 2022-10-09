@@ -1,7 +1,7 @@
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 
-class ActiveLearningAlgo(object):.
+class ActiveLearningAlgo(object):
     """ActiveLearningAlgo
     Given a set of vectors, allows iterative sampling. 
     Internal state gets updated with every proposed sample and the reaction to that sample.
@@ -58,18 +58,18 @@ class CurveFittingAlgo(object):
         
     Note: Labels are tuples (label, subgroup_string)
     """
-    def __init__(self, X, idx2labels):
+    def __init__(self, X):
         self.X = X
-        self.idx2labels = idx2labels
+        # self.idx2labels = idx2labels
         pass
 
     def fit_and_predict(self):
         raise NotImplementedError
 
-
 class CosineSimFit(CurveFittingAlgo):
-    def __init__(self, X, idx2labels):
-        super().__init__(X, idx2labels)
+    def __init__(self, X):
+        # super().__init__(X, idx2labels)
+        super().__init__(X)
         return
     
     def fetch_neighborhood(self, src_idx, min_cos_sim):
@@ -80,30 +80,28 @@ class CosineSimFit(CurveFittingAlgo):
         nbrs = [idx for idx in nbrs if idx != src_idx]
         return nbrs
 
-    def fit_and_predict(self, label_of_interest, subgroup_of_interest, min_cos_sim):
+    def fit_and_predict(self, label_of_interest, subgroup_of_interest, min_cos_sim, idx2labels):
         """
         given a binary label L of interest (int) and a subgroup of interest (string)
         fetches the neighborhood around every point with label L for that subgroup
         excludes points that fall in the neighborhood of other (label, subgroup) pairs
         returns a master list of all points to which label (L, subgroup_of_interest) was 'propagatable'
         """
-        
+        self.idx2labels = idx2labels
         # included idxs
         idxs_interest = [idx for idx in self.idx2labels if self.idx2labels[idx][0]==label_of_interest]
-        idxs_interest = [idx for idx in idxs_interest is self.idx2labels[idx][1]==subgroup_of_interest]
+        idxs_interest = [idx for idx in idxs_interest if self.idx2labels[idx][1]==subgroup_of_interest]
         
-        interest_nbrhds = [self.fetch_neighborhood(self.X, idx, min_cos_sim) for idx in idxs_interest]
+        interest_nbrhds = [self.fetch_neighborhood(idx, min_cos_sim) for idx in idxs_interest]
         
         # excluded idxs
-        idxs_composite = [idx for idx in self.idx2labels not idx in idxs_interest]
+        idxs_composite = [idx for idx in self.idx2labels if not idx in idxs_interest]
         assert len(idxs_interest) + len(idxs_composite) == len(self.idx2labels)
 
-        composite_nbrhds = [self.fetch_neighborhood(self.X, idx, min_cos_sim) for idx in idxs_composite]
+        composite_nbrhds = [self.fetch_neighborhood(idx, min_cos_sim) for idx in idxs_composite]
         
         # flatten idxs to exclude
         all_composite_idxs = list(set([x for lst in composite_nbrhds for x in lst]))
 
         # return idxs of interest still grouped by cluster
         return [idx for lst in interest_nbrhds for idx in lst if not idx in all_composite_idxs]
-    
-    
