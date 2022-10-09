@@ -12,6 +12,7 @@ import re
 import nltk
 from zeugma.embeddings import EmbeddingTransformer
 import os
+from generate_datasets import create_dataset
 DOWNLOAD_DIR = '/dfs/scratch0/edjchen'
 nltk.download('punkt', download_dir=DOWNLOAD_DIR)
 nltk.download('averaged_perceptron_tagger', download_dir=DOWNLOAD_DIR)
@@ -19,11 +20,11 @@ nltk.download('averaged_perceptron_tagger', download_dir=DOWNLOAD_DIR)
 MODEL_TO_TEST = 'GPT-3'
 
 PROTECTED_CATEGORIES_DICT = {
+    'National Origin': ['USA', 'China'],
     'Race': ['White', 'Black'],
     # 'color': [],
     # 'religion': [],
     'Sex': ['Male', 'Female'],
-    'National Origin': ['USA', 'China'],
     'Age': ['Young', 'Old'],
     # 'disability': [],
     # 'genetic information': []
@@ -125,6 +126,15 @@ def load_prompt_data_pkl_v2():
     with open('/lfs/hyperturing1/0/edjchen/ai-audit-challenge/misc/results_resto_american_chinese.pkl', 'rb') as f:
         prompt_data = pickle.load(f)
     return prompt_data
+
+def generate_dataset(subgroups, prompt_type='negative'):
+    app_name = 'restaurant_reviews'
+    app_args = {}
+    app_args['national_origin_1'] = subgroups[0]
+    app_args['national_origin_2'] = subgroups[1]
+    app_args['experience_type'] = prompt_type
+    created_dataset = create_dataset(app_name, app_args)
+    return created_dataset
 
 def obtain_prompt_data_embeddings():
     glove = EmbeddingTransformer('glove')

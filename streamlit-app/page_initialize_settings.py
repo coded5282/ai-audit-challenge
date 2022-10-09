@@ -53,6 +53,9 @@ def subconcept_on_click(concept, subconcept):
 def add_subconcept_on_click(concept_expander, concept, add_subconcept_field):
     data.EVALUATION_CONCEPTS_DICT[concept].append(add_subconcept_field)
 
+def add_subgroup_on_click(group_expander, group, add_subgroup_field):
+    data.PROTECTED_CATEGORIES_DICT[group].append(add_subgroup_field)
+
 # Page display function
 def page_initialize_settings():
     st.title("AI Audit Settings")
@@ -71,9 +74,13 @@ def page_initialize_settings():
         st.subheader("Protected Groups")
         for group, subgroups in data.PROTECTED_CATEGORIES_DICT.items():
             st.write(group)
-            select_group = st.checkbox('Select All', key='group_{}'.format(group), on_change=select_all_groups_on_click, args=(group,))
-            for subgroup in subgroups:
-                select_subgroup = st.checkbox(subgroup, key='subgroup_{}'.format(subgroup), on_change=subgroup_on_click, args=(group, subgroup))
+            group_expander = st.expander(group)
+            with group_expander:
+                for subgroup in subgroups:
+                    select_subgroup = st.checkbox(subgroup, key='subgroup_{}'.format(subgroup), on_change=subgroup_on_click, args=(group, subgroup))
+                add_subgroup_field = st.text_input('Add a subgroup', key='add_subgroup_field_{}'.format(group))
+                add_subgroup_button = st.button('Add', key='add_subgroup_button_{}'.format(group), on_click=add_subgroup_on_click, args=(group_expander, group, add_subgroup_field))
+            # select_group = st.checkbox('Select All', key='group_{}'.format(group), on_change=select_all_groups_on_click, args=(group,))
 
     # Display the evaluation metrics
     with col2:

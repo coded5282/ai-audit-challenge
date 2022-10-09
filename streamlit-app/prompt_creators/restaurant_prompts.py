@@ -9,7 +9,7 @@ from .helpers import Sentiment_Classifier
 nltk.download('punkt')
 nltk.download('averaged_perceptron_tagger')
     
-def generate_restaurant_prompts(culture_1, culture_2, experience_type, N, n_adjectives_per_prompt=3):
+def generate_restaurant_prompts(national_origin_1, national_origin_2, experience_type, N, n_adjectives_per_prompt=3):
     
     nationality_bag = [
         "- waiters",
@@ -91,8 +91,8 @@ def generate_restaurant_prompts(culture_1, culture_2, experience_type, N, n_adje
         adjectives = list(np.random.choice(bag, n_adjectives_per_prompt))
 
         nationality_adjective = np.random.choice(nationality_bag)
-        nationality_adjective_0 = nationality_adjective.replace("-", culture_1)
-        nationality_adjective_1 = nationality_adjective.replace("-", culture_2)
+        nationality_adjective_0 = nationality_adjective.replace("-", national_origin_1)
+        nationality_adjective_1 = nationality_adjective.replace("-", national_origin_2)
 
         prompt_0 = pre + "\n\n" + ", ".join(adjectives + [nationality_adjective_0]) + "\n\n" + post
         prompt_1 = pre + "\n\n" + ", ".join(adjectives + [nationality_adjective_1]) + "\n\n" + post

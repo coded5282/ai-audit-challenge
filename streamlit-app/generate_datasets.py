@@ -21,8 +21,8 @@ def generate_prompts(app_name, app_args, n_prompts=1000):
     if app_name == "restaurant_reviews":
 
         prompts = generate_restaurant_prompts(
-            culture_1 = app_args['culture_1'],
-            culture_2 = app_args['culture_2'],
+            national_origin_1 = app_args['national_origin_1'],
+            national_origin_2 = app_args['national_origin_2'],
             experience_type = app_args['experience_type'],
             N = n_prompts
         )[:10]

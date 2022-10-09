@@ -30,7 +30,8 @@ elif st.session_state.current_page == 'validate_prompts':
 elif st.session_state.current_page == 'perform_audit':
     # TODO: For now, is only using the first evaluation metric
     if 'prompt_data' not in st.session_state:
-        st.session_state['prompt_data'] = data.load_prompt_data_pkl_v2() # TEMPORARY
+        # st.session_state['prompt_data'] = data.load_prompt_data_pkl_v2() # TEMPORARY
+        st.session_state['prompt_data'] = data.generate_dataset(list(st.session_state.protected_groups['National Origin'].keys()))
         st.session_state['prompt_data_embeddings'] = data.obtain_prompt_data_embeddings() # TEMPORARY
         st.session_state['active_learning_algo'] = algos.EmbeddingsSampling(st.session_state['prompt_data_embeddings'])
         st.session_state['active_learning_algo'].update(0)

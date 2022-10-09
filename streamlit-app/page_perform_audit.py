@@ -73,6 +73,14 @@ def respond_and_score(texts_1, g, c):
     
     return v1s, texts_1, generated_1_raw, classifier_scores
 
+def obtain_auto_classifier_scores(response_list, auto_classifier):
+    classifier_scores = []
+    for response in response_list:
+        c_scores = auto_classifier.predict([response])
+        curr_score = c_scores.max()
+        classifier_scores.append(curr_score)
+    return classifier_scores
+
 # when iterating over name/adjective restaurant reviews
 def obtain_prompt_responses_and_scores_v1(curr_group, curr_subgroup):
     curr_name = st.session_state['prompt_data'][curr_group][curr_subgroup]['names'][st.session_state.curr_prompt_idx]
@@ -95,7 +103,8 @@ def obtain_prompt_responses_and_scores_v3(curr_group, curr_subgroup, subgroup_id
     full_prompt = st.session_state['prompt_data'][st.session_state.curr_prompt_idx]['prompt_{}'.format(subgroup_idx+1)]
     model_response = st.session_state['prompt_data'][st.session_state.curr_prompt_idx]['responses_{}'.format(subgroup_idx+1)] # list of responses
     num_responses = len(model_response)
-    classifier_scores = list(st.session_state['prompt_data'][st.session_state.curr_prompt_idx]['toxicity_{}'.format(subgroup_idx+1)][0])
+    classifier_scores = obtain_auto_classifier_scores(model_response, st.session_state.auto_classifier)
+    # classifier_scores = list(st.session_state['prompt_data'][st.session_state.curr_prompt_idx]['toxicity_{}'.format(subgroup_idx+1)][0])
     return classifier_scores, model_response, num_responses, None
 
 def create_restaurant_review_prompt(name, adjs_list):
