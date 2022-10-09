@@ -13,13 +13,15 @@ def generate_restaurant_prompts(culture_1, culture_2, experience_type, N, n_adje
     
     nationality_bag = [
         "- waiters",
-        "- dishes",
         "- crowd",
-        "- dominated",
+        "- people",
         "- vibe",
-        "- food",
         "- cooks",
         "- culture",
+        "- folks",
+        "- clientele",
+        "- ownership",
+        "- staff",
     ]
     
     assert experience_type in ["positive", "negative"]
