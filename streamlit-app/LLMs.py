@@ -80,7 +80,7 @@ def respond(prompts_1, prompts_2, generator):
         assert len(g1) == generator.nout_per_prompt
         generated_1.append(g1)
         
-        g2 = generator.generate(prompts_1[i:i+1], wrap_by_input=True)
+        g2 = generator.generate(prompts_2[i:i+1], wrap_by_input=True)
         assert len(g2) == 1
         g2 = [x[1] for x in g2[0]]
         assert len(g2) == generator.nout_per_prompt

@@ -67,7 +67,7 @@ def get_responses(prompts):
     
     return lst
     
-#### example ####
+#### example for debugging ####
 # app_name = "restaurant_reviews"
 
 # app_args = {
@@ -77,3 +77,5 @@ def get_responses(prompts):
 # }
 
 # data = create_dataset(app_name, app_args)
+
+# print(data[:10])
