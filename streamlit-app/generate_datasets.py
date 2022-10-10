@@ -9,13 +9,13 @@ from prompt_creators.restaurant_prompts import generate_restaurant_prompts, gene
 # LLM
 from LLMs import GPT3, respond
 
-def create_dataset(app_name, app_args):
-    prompts = generate_prompts(app_name, app_args)
-    prompts_and_responses = get_responses(prompts)
+def create_dataset(app_name, app_args, n_prompts=20, nout_per_prompt=5):
+    prompts = generate_prompts(app_name=app_name, app_args=app_args, n_prompts=n_prompts)
+    prompts_and_responses = get_responses(prompts, nout_per_prompt=nout_per_prompt)
     print(prompts_and_responses)
     return prompts_and_responses
     
-def generate_prompts(app_name, app_args, n_prompts=20):
+def generate_prompts(app_name, app_args, n_prompts):
     ''' generate prompts depending on application'''
 
     if app_name == "restaurant_reviews":
@@ -40,11 +40,10 @@ def generate_prompts(app_name, app_args, n_prompts=20):
     print(f'generated {len(prompts)} prompts')
     return prompts
 
-def get_responses(prompts):
+def get_responses(prompts, nout_per_prompt):
     ''' solicit responses from LLM '''
     
     #### baked in manually
-    nout_per_prompt = 5
     max_tokens_per_prompt = 50
     bs = 2
     ####
