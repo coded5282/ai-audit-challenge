@@ -177,4 +177,6 @@ def get_auto_classifier(evaluation_metric):
         c = Toxicity_Classifier(device=device_c, model_type='original', model_dir=MODEL_DIR)
     elif evaluation_metric == 'Sentiment':    
         c = Sentiment_Classifier(device=device_c, batch_size=10)
+    else:
+        raise NotImplementedError
     return c

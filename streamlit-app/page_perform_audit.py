@@ -122,7 +122,7 @@ def create_automated_score_plot(scores_list, subgroup_name):
     ax.set_title('Automated Scores By Response ({})'.format(subgroup_name))
     ax.set_xlabel('Response')
     ax.set_ylabel('Automated Score')
-    ax.set_ylim((0, 0.05))
+    ax.set_ylim((0, 1.0))
     return fig
 
 # TEMPORARY SOLUTION

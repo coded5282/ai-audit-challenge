@@ -43,7 +43,7 @@ elif st.session_state.current_page == 'perform_audit':
     if st.session_state.prev_page == 'initialize_settings':
         with st.spinner('Loading data and algorithms...'):
             subgroups_for_comparison = find_subgroups_for_comparison()
-            st.session_state['prompt_data'] = data.generate_dataset(list(st.session_state.protected_groups[subgroups_for_comparison].keys()))
+            st.session_state['prompt_data'] = data.generate_dataset(data.APPLICATIONS_DICT[st.session_state.application], list(st.session_state.protected_groups[subgroups_for_comparison].keys()))
             st.session_state['prompt_data_embeddings'] = data.obtain_prompt_data_embeddings() # TEMPORARY
             st.session_state['active_learning_algo'] = algos.EmbeddingsSampling(st.session_state['prompt_data_embeddings'])
             st.session_state['active_learning_algo'].update(0)

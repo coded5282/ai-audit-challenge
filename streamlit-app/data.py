@@ -30,12 +30,19 @@ PROTECTED_CATEGORIES_DICT = {
     # 'genetic information': []
 }
 
-EVALUATION_METRICS = ['Toxicity', 'Sentiment', 'Fluency', 'Length']
+EVALUATION_METRICS = ['Toxicity', 'Sentiment']
 
 EVALUATION_CONCEPTS_DICT = {
     'Technology': ['AI', 'Robotics', 'Computers'],
     'Science': ['Physics', 'Chemistry', 'Biology'],
     'Sports': ['Football', 'Basketball', 'Baseball', 'Swimming'],
+}
+
+APPLICATIONS_AVAILABLE = ['Restaurant Reviews', 'Car Advertisements']
+
+APPLICATIONS_DICT = {
+    'Restaurant Reviews': 'restaurant_reviews',
+    'Car Advertisements': 'car_ads'
 }
 
 def pos_tag(text):
@@ -127,8 +134,8 @@ def load_prompt_data_pkl_v2():
         prompt_data = pickle.load(f)
     return prompt_data
 
-def generate_dataset(subgroups, prompt_type='negative'):
-    app_name = 'restaurant_reviews'
+def generate_dataset(app_name, subgroups, prompt_type='negative'):
+    # app_name = 'restaurant_reviews'
     app_args = {}
     app_args['national_origin_1'] = subgroups[0]
     app_args['national_origin_2'] = subgroups[1]

@@ -133,6 +133,8 @@ def page_initialize_settings():
 
     # Display the evaluation concepts
     with col3:
+        st.subheader("Application")
+        st.radio('Select an application', data.APPLICATIONS_AVAILABLE, key='application')
         # st.subheader("Evaluation Concepts")
         # for concept, subconcepts in data.EVALUATION_CONCEPTS_DICT.items():
         #     concept_expander = st.expander(concept)
@@ -156,3 +158,4 @@ def page_initialize_settings():
     print("Protected Groups: {}".format(st.session_state.protected_groups))
     print("Evaluation Metrics: {}".format(st.session_state.evaluation_metrics))
     print("Evaluation Concepts: {}".format(st.session_state.evaluation_concepts))
+    print("APPLICATION: {}".format(st.session_state.application))

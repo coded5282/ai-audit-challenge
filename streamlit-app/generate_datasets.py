@@ -4,7 +4,7 @@ Args are provided to specify the exact dataset version (e.g. for app resto revie
 '''
 
 # prompt scripts by app
-from prompt_creators.restaurant_prompts import generate_restaurant_prompts
+from prompt_creators.restaurant_prompts import generate_restaurant_prompts, generate_car_ad_prompts
 
 # LLM
 from LLMs import GPT3, respond
@@ -26,8 +26,13 @@ def generate_prompts(app_name, app_args, n_prompts=20):
             N = n_prompts
         )
 
-    elif app_name == "adverts":
-        raise NotImplementedError
+    elif app_name == "car_ads":
+        prompts = generate_car_ad_prompts(
+            national_origin_1 = app_args['national_origin_1'],
+            national_origin_2 = app_args['national_origin_2'],
+            experience_type = app_args['experience_type'],
+            N = n_prompts
+        )
 
     else:
         raise NotImplementedError
