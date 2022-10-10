@@ -31,8 +31,9 @@ def curr_preference_on_click(score, curr_group, curr_subgroups):
         st.session_state.idx2labels[curr_group][curr_subgroups[0]][st.session_state.curr_prompt_idx] = (0, curr_subgroups[0])
         st.session_state.idx2labels[curr_group][curr_subgroups[1]][st.session_state.curr_prompt_idx] = (1, curr_subgroups[1])
     elif score == -1: # equals
-        st.session_state.idx2labels[curr_group][curr_subgroups[0]][st.session_state.curr_prompt_idx] = (0, curr_subgroups[0])
-        st.session_state.idx2labels[curr_group][curr_subgroups[1]][st.session_state.curr_prompt_idx] = (0, curr_subgroups[1])
+        pass # ignore for now since, if the prompts are equal, then it is not discriminatory
+        # st.session_state.idx2labels[curr_group][curr_subgroups[0]][st.session_state.curr_prompt_idx] = (0, curr_subgroups[0])
+        # st.session_state.idx2labels[curr_group][curr_subgroups[1]][st.session_state.curr_prompt_idx] = (0, curr_subgroups[1])
 
     st.session_state['curr_prompt_idx'] = st.session_state['active_learning_algo'].next_sample()
     st.session_state['active_learning_algo'].update(st.session_state['curr_prompt_idx'])

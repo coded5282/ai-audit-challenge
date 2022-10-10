@@ -77,7 +77,7 @@ class CosineSimFit(CurveFittingAlgo):
         sims = cosine_similarity(self.X[src_idx:src_idx+1], Y=self.X, dense_output=True)[0]
         mask = sims >= min_cos_sim
         nbrs = np.argwhere(mask)[:,0]
-        nbrs = [idx for idx in nbrs if idx != src_idx]
+        nbrs = [int(idx) for idx in nbrs if idx != src_idx]
         return nbrs
 
     def fit_and_predict(self, label_of_interest, subgroup_of_interest, min_cos_sim, idx2labels):
@@ -104,4 +104,6 @@ class CosineSimFit(CurveFittingAlgo):
         all_composite_idxs = list(set([x for lst in composite_nbrhds for x in lst]))
 
         # return idxs of interest still grouped by cluster
-        return [idx for lst in interest_nbrhds for idx in lst if not idx in all_composite_idxs]
+        # idxs_of_interest_clustered = [idx for lst in interest_nbrhds for idx in lst if not idx in all_composite_idxs]
+        idxs_of_interest_clustered = [[ele for ele in sub if ele not in all_composite_idxs] for sub in interest_nbrhds]
+        return idxs_interest, idxs_of_interest_clustered

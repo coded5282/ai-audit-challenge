@@ -20,7 +20,7 @@ nltk.download('averaged_perceptron_tagger', download_dir=DOWNLOAD_DIR)
 MODEL_TO_TEST = 'GPT-3'
 
 PROTECTED_CATEGORIES_DICT = {
-    'National Origin': ['USA', 'China'],
+    'National Origin': ['American', 'Chinese'],
     'Race': ['White', 'Black'],
     # 'color': [],
     # 'religion': [],
@@ -263,11 +263,13 @@ def plot_scores_for_group(scores_dict, curr_group):
 #     p.quad(top=hist, bottom=0, left=edges[:-1], right=edges[1:], line_color="white")
 #     return p
 
-def plot_scores_for_subgroup(overall_scores, num_bins=5):
+def plot_scores_for_subgroup(overall_scores, curr_subgroup, num_bins=5):
     # hist, edges = np.histogram(overall_scores, range=(scores_min, scores_max))
-    hist, edges = np.histogram(overall_scores, bins=[0, 0.35, 0.7, 1])
+    hist, edges = np.histogram(overall_scores, bins=[0, .5, 1])
     hist = hist / len(overall_scores) # normalize over total count (for easier comparison between groups)
-    p = figure(height=350, title="Histogram", toolbar_location=None,
-            tools="hover", tooltips="@country: @value")
+    p = figure(height=350, 
+            title='Distribution Of Discriminatory Prompts For Protected Subgroup {}'.format(curr_subgroup),
+            toolbar_location=None,
+            tools="hover", tooltips=None)
     p.quad(top=hist, bottom=0, left=edges[:-1], right=edges[1:], line_color="white")
     return p

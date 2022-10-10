@@ -15,17 +15,16 @@ def create_dataset(app_name, app_args):
     print(prompts_and_responses)
     return prompts_and_responses
     
-def generate_prompts(app_name, app_args, n_prompts=1000):
+def generate_prompts(app_name, app_args, n_prompts=20):
     ''' generate prompts depending on application'''
 
     if app_name == "restaurant_reviews":
-
         prompts = generate_restaurant_prompts(
             national_origin_1 = app_args['national_origin_1'],
             national_origin_2 = app_args['national_origin_2'],
             experience_type = app_args['experience_type'],
             N = n_prompts
-        )[:10]
+        )
 
     elif app_name == "adverts":
         raise NotImplementedError
