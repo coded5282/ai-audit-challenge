@@ -29,12 +29,22 @@ def subgroup_on_click(group, subgroup):
         if group not in st.session_state.protected_groups:
             st.session_state.protected_groups[group] = {}
         st.session_state.protected_groups[group][subgroup] = {}
+    check_subgroups_overselected()
 
 def evaluation_metric_on_click(metric):
     if st.session_state['metric_{}'.format(metric)] == True:
         st.session_state.evaluation_metrics.append(metric)
     else:
         st.session_state.evaluation_metrics.remove(metric)
+    if len(st.session_state.evaluation_metrics) == 1:
+        st.session_state.contains_proper_metrics = True
+        st.session_state.contains_metric_errors = False
+    if len(st.session_state.evaluation_metrics) >= 2:
+        st.warning('You can currently only select one evaluation metric at a time. Please unselect the other metric before selecting this one.')
+        st.session_state.contains_metric_errors = True
+        st.session_state.contains_proper_metrics = False
+    else:
+        st.session_state.contains_metric_errors = False
 
 def subconcept_on_click(concept, subconcept):
     # unchecking checkbox
@@ -56,10 +66,35 @@ def add_subconcept_on_click(concept_expander, concept, add_subconcept_field):
 def add_subgroup_on_click(group_expander, group, add_subgroup_field):
     data.PROTECTED_CATEGORIES_DICT[group].append(add_subgroup_field)
 
+def check_subgroups_overselected():
+    total_selected = 0
+    multiple_groups_selected = False
+    groups_list = list(st.session_state.protected_groups.keys())
+    for group in groups_list:
+        num_selected = len(list(st.session_state.protected_groups[group].keys()))
+        if (num_selected > 0) and (total_selected > 0):
+            multiple_groups_selected = True
+        total_selected += num_selected
+    if total_selected > 2:
+        st.warning('You can currently only select two protected subgroups at a time. Please unselect the other protected categories before selecting this one.')
+        st.session_state.contains_subgroup_errors = True
+        st.session_state.contains_proper_subgroups = False
+    if multiple_groups_selected:
+        st.warning('You can currently only select two protected subgroups from the same group (i.e. Race, Age) at a time. Please unselect the other protected categories before selecting this one.')
+        st.session_state.contains_subgroup_errors = True
+        st.session_state.contains_proper_subgroups = False
+    if (total_selected <= 2) and (not multiple_groups_selected):
+        st.session_state.contains_subgroup_errors = False
+        if total_selected == 2:
+            st.session_state.contains_proper_subgroups = True
+        else:
+            st.session_state.contains_proper_subgroups = False
+
 # Page display function
 def page_initialize_settings():
     st.title("AI Audit Settings")
-    st.header("Model: {}".format(data.MODEL_TO_TEST))
+    st.header("Model Being Audited: {}".format(data.MODEL_TO_TEST))
+    st.subheader('Please select two protected subgroups and one evaluation metric.')
 
     col1, col2, col3 = st.columns((1, 1, 1))
     if 'protected_groups' not in st.session_state:
@@ -68,6 +103,14 @@ def page_initialize_settings():
         st.session_state.evaluation_metrics = []
     if 'evaluation_concepts' not in st.session_state:
         st.session_state.evaluation_concepts = {}
+    if 'contains_subgroup_errors' not in st.session_state:
+        st.session_state.contains_subgroup_errors = False
+    if 'contains_metric_errors' not in st.session_state:
+        st.session_state.contains_metric_errors = False
+    if 'contains_proper_subgroups' not in st.session_state:
+        st.session_state.contains_proper_subgroups = False
+    if 'contains_proper_metrics' not in st.session_state:
+        st.session_state.contains_proper_metrics = False
 
     # Display the protected groups/subgroups
     with col1:
@@ -106,7 +149,9 @@ def page_initialize_settings():
         st.markdown('#')
         st.markdown('#')
         st.markdown('#')
-        st.button('Validate Prompts', on_click=start_audit_on_click)
+        print(st.session_state.contains_proper_subgroups)
+        print(st.session_state.contains_proper_metrics)
+        st.button('Validate Prompts', on_click=start_audit_on_click, disabled=(st.session_state.contains_subgroup_errors or st.session_state.contains_metric_errors) or (not st.session_state.contains_proper_metrics or not st.session_state.contains_proper_subgroups))
 
     print("Protected Groups: {}".format(st.session_state.protected_groups))
     print("Evaluation Metrics: {}".format(st.session_state.evaluation_metrics))

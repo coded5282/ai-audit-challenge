@@ -141,7 +141,7 @@ def cycle_through_all_prompts(curr_group, curr_subgroup):
 # Page display function
 def page_perform_audit():
     st.title('AI Audit')
-    st.header('Please select the side (left/right) that you believe is more discriminative (or equal if they are about the same)')
+    st.header('Please select the side (left/right) that you believe is associated with a higher value of {} (or equal if they are about the same)'.format(st.session_state.evaluation_metrics[0]))
 
     if 'curr_prompt_idx' not in st.session_state:
         st.session_state.curr_prompt_idx = 0
