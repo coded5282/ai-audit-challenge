@@ -51,18 +51,17 @@ class Sentiment_Classifier(Classifier):
         
         arrs = []
         for lst in res:
-            arr = np.zeros((3, 1))
+            arr = np.zeros((1, 1))
             
             for dct in lst:
                 idx = int(dct['label'].split("LABEL_")[-1]) 
                 assert idx in [0, 1, 2]
-                arr[idx, 0] = dct['score']
+                if idx == 0: arr[0, 0] = dct['score']
             
-            assert abs(1 - arr.sum()) < 1e-3
             arrs.append(arr)
            
         arrs = np.concatenate(arrs, axis=-1)
-        assert arrs.shape == (3, len(lst_texts))
+        assert arrs.shape == (1, len(lst_texts))
         
         return arrs
 
