@@ -1,6 +1,7 @@
 import streamlit as st
 import data as data
 from streamlit.errors import DuplicateWidgetID
+from persist import persist
 
 # On click functions
 def start_audit_on_click():
@@ -94,7 +95,7 @@ def check_subgroups_overselected():
 def page_initialize_settings():
     st.title("AI Audit Settings")
     st.header("Model Being Audited: {}".format(data.MODEL_TO_TEST))
-    st.subheader('Please select two protected subgroups and one evaluation metric.')
+    st.subheader('Please select two protected subgroups (from the same overall group), an evaluation metric, and an application.')
 
     col1, col2, col3 = st.columns((1, 1, 1))
     if 'protected_groups' not in st.session_state:
@@ -110,7 +111,7 @@ def page_initialize_settings():
     if 'contains_proper_subgroups' not in st.session_state:
         st.session_state.contains_proper_subgroups = False
     if 'contains_proper_metrics' not in st.session_state:
-        st.session_state.contains_proper_metrics = False
+        st.session_state.contains_proper_metrics = True
 
     # Display the protected groups/subgroups
     with col1:
@@ -128,13 +129,14 @@ def page_initialize_settings():
     # Display the evaluation metrics
     with col2:
         st.subheader("Evaluation Metrics")
-        for metric in data.EVALUATION_METRICS:
-            st.checkbox(metric, key='metric_{}'.format(metric), on_change=evaluation_metric_on_click, args=(metric,))
+        # for metric in data.EVALUATION_METRICS:
+        st.radio('Select a metric', data.EVALUATION_METRICS, key=persist('metric'))
+            # st.checkbox(metric, key='metric_{}'.format(metric), on_change=evaluation_metric_on_click, args=(metric,))
 
     # Display the evaluation concepts
     with col3:
         st.subheader("Application")
-        st.radio('Select an application', data.APPLICATIONS_AVAILABLE, key='application')
+        st.radio('Select an application', data.APPLICATIONS_AVAILABLE, key=persist('application'))
         # st.subheader("Evaluation Concepts")
         # for concept, subconcepts in data.EVALUATION_CONCEPTS_DICT.items():
         #     concept_expander = st.expander(concept)
@@ -156,6 +158,6 @@ def page_initialize_settings():
         st.button('Validate Prompts', on_click=start_audit_on_click, disabled=(st.session_state.contains_subgroup_errors or st.session_state.contains_metric_errors) or (not st.session_state.contains_proper_metrics or not st.session_state.contains_proper_subgroups))
 
     print("Protected Groups: {}".format(st.session_state.protected_groups))
-    print("Evaluation Metrics: {}".format(st.session_state.evaluation_metrics))
+    print("Evaluation Metrics: {}".format(st.session_state.metric))
     print("Evaluation Concepts: {}".format(st.session_state.evaluation_concepts))
     print("APPLICATION: {}".format(st.session_state.application))

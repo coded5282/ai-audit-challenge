@@ -104,6 +104,6 @@ class CosineSimFit(CurveFittingAlgo):
         all_composite_idxs = list(set([x for lst in composite_nbrhds for x in lst]))
 
         # return idxs of interest still grouped by cluster
-        # idxs_of_interest_clustered = [idx for lst in interest_nbrhds for idx in lst if not idx in all_composite_idxs]
-        idxs_of_interest_clustered = [[ele for ele in sub if ele not in all_composite_idxs] for sub in interest_nbrhds]
-        return idxs_interest, idxs_of_interest_clustered
+        # idxs_of_interest_clustered = [[ele for ele in sub if ele not in all_composite_idxs] for sub in interest_nbrhds]
+        # return idxs_interest, idxs_of_interest_clustered
+        return idxs_interest, interest_nbrhds

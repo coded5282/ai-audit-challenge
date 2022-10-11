@@ -148,6 +148,7 @@ def obtain_prompt_data_embeddings():
     prompt_data = []
     for prompt_dict in st.session_state['prompt_data']:
         full_prompt = prompt_dict['prompt_1']
+        full_prompt = full_prompt.split('\n\n')[1]
         full_prompt = full_prompt.replace('American', '')
         full_prompt = full_prompt.replace('Chinese', '')
         full_prompt = full_prompt.replace('America', '')
@@ -273,10 +274,13 @@ def plot_scores_for_group(scores_dict, curr_group):
 def plot_scores_for_subgroup(overall_scores, curr_subgroup, num_bins=5):
     # hist, edges = np.histogram(overall_scores, range=(scores_min, scores_max))
     hist, edges = np.histogram(overall_scores, bins=[0, .5, 1])
-    hist = hist / len(overall_scores) # normalize over total count (for easier comparison between groups)
-    p = figure(height=350, 
-            title='Distribution Of Discriminatory Prompts For Protected Subgroup {}'.format(curr_subgroup),
-            toolbar_location=None,
-            tools="hover", tooltips=None)
-    p.quad(top=hist, bottom=0, left=edges[:-1], right=edges[1:], line_color="white")
+    # hist = hist / len(overall_scores) # normalize over total count (for easier comparison between groups)
+    score_types = ['Discriminatory Prompts Where {} \n Was Less Prejudiced Against'.format(curr_subgroup),
+                    'Discriminatory Prompts Where {} \n Was More Prejudiced Against'.format(curr_subgroup)]
+    p = figure(x_range=score_types, height=250, 
+            title='Distribution Of Extrapolated Discriminatory Prompts For Protected Subgroup {}'.format(curr_subgroup),
+            toolbar_location=None, tools="")
+    p.vbar(x=score_types, top=hist, width=0.9)
+    p.xgrid.grid_line_color = None
+    p.y_range.start = 0
     return p

@@ -9,7 +9,7 @@ from prompt_creators.restaurant_prompts import generate_restaurant_prompts, gene
 # LLM
 from LLMs import GPT3, respond
 
-def create_dataset(app_name, app_args, n_prompts=20, nout_per_prompt=5):
+def create_dataset(app_name, app_args, n_prompts=100, nout_per_prompt=5):
     prompts = generate_prompts(app_name=app_name, app_args=app_args, n_prompts=n_prompts)
     prompts_and_responses = get_responses(prompts, nout_per_prompt=nout_per_prompt)
     print(prompts_and_responses)

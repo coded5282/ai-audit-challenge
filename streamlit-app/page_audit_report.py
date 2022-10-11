@@ -13,8 +13,8 @@ def flatten(l):
 def curve_fitting_extrapolation(curr_group, curr_subgroup):
     if 'curve_fitting_algo' not in st.session_state:
         raise Exception('Curve fitting algo not implemented!')
-    human_values_0, extrapolated_values_0 = st.session_state['curve_fitting_algo'].fit_and_predict(label_of_interest=0, subgroup_of_interest=curr_subgroup, min_cos_sim=0.975,  idx2labels=st.session_state.idx2labels[curr_group][curr_subgroup])
-    human_values_1, extrapolated_values_1 = st.session_state['curve_fitting_algo'].fit_and_predict(label_of_interest=1, subgroup_of_interest=curr_subgroup, min_cos_sim=0.975,          idx2labels=st.session_state.idx2labels[curr_group][curr_subgroup])
+    human_values_0, extrapolated_values_0 = st.session_state['curve_fitting_algo'].fit_and_predict(label_of_interest=0, subgroup_of_interest=curr_subgroup, min_cos_sim=0.92, idx2labels=st.session_state.idx2labels[curr_group][curr_subgroup])
+    human_values_1, extrapolated_values_1 = st.session_state['curve_fitting_algo'].fit_and_predict(label_of_interest=1, subgroup_of_interest=curr_subgroup, min_cos_sim=0.92, idx2labels=st.session_state.idx2labels[curr_group][curr_subgroup])
     extrapolated_scores = [0 for _ in range(len(flatten(extrapolated_values_0)))]
     extrapolated_scores.extend([1 for _ in range(len(flatten(extrapolated_values_1)))])
     values_dict = {'human': [human_values_0, human_values_1],
@@ -29,9 +29,9 @@ def display_col_exemplars(curr_tab_col, curr_subgroup, curr_subgroups, scores_di
     score_tabs = curr_tab_col.tabs(['Score {}'.format(curr_score) for curr_score in range(len(human_scores_idxs_lists))])
     for human_score_idx_list_idx, human_score_idx_list in enumerate(human_scores_idxs_lists):
         if human_score_idx_list_idx == 0:
-            score_tabs[human_score_idx_list_idx].markdown('Discriminatory prompts for which the protected subgroup **_{}_** has a lower value of **_{}_**'.format(curr_subgroup, st.session_state.evaluation_metrics[0]))
+            score_tabs[human_score_idx_list_idx].markdown('Discriminatory prompts for which the protected subgroup **_{}_** has a lower value of **_{}_**'.format(curr_subgroup, st.session_state.metric))
         elif human_score_idx_list_idx == 1:
-            score_tabs[human_score_idx_list_idx].markdown('Discriminatory prompts for which the protected subgroup **_{}_** has a higher value of **_{}_**'.format(curr_subgroup, st.session_state.evaluation_metrics[0]))
+            score_tabs[human_score_idx_list_idx].markdown('Discriminatory prompts for which the protected subgroup **_{}_** has a higher value of **_{}_**'.format(curr_subgroup, st.session_state.metric))
         extrapolated_score_idx_list = extrapolated_scores_idxs_lists[human_score_idx_list_idx]
         for human_score_idx, human_score_idx_val in enumerate(human_score_idx_list):
             curr_human_score_extrapolated_idxs_list = extrapolated_score_idx_list[human_score_idx]
@@ -97,8 +97,8 @@ def page_audit_report():
             curr_tab_col.write('{}'.format(curr_subgroup))
             curr_fig = data.plot_scores_for_subgroup(extrapolated_scores, curr_subgroup)
             curr_tab_col.bokeh_chart(curr_fig, use_container_width=False)
-            curr_tab_col.write('The bar on the left displays the overall proportion of discriminatory prompts for which the protected subgroup {} has a lower value of {}.'.format(curr_subgroup, st.session_state.evaluation_metrics[0]))
-            curr_tab_col.write('The bar on the right displays the overall proportion of discriminatory prompts for which the protected subgroup {} has a higher value of {}.'.format(curr_subgroup, st.session_state.evaluation_metrics[0]))
+            curr_tab_col.write('The bar on the left displays the overall proportion of discriminatory prompts for which the protected subgroup {} has a lower value of {}.'.format(curr_subgroup, st.session_state.metric))
+            curr_tab_col.write('The bar on the right displays the overall proportion of discriminatory prompts for which the protected subgroup {} has a higher value of {}.'.format(curr_subgroup, st.session_state.metric))
 
             display_col_exemplars(curr_tab_col, curr_subgroup, curr_subgroups, scores_dict)
 

@@ -9,6 +9,9 @@ import data as data
 import automated_classifiers as automated_classifiers
 import models as models
 import algos as algos
+from persist import persist, load_widget_state
+
+load_widget_state()
 
 print("Starting new page!")
 st.set_page_config(layout="wide")
@@ -48,7 +51,7 @@ elif st.session_state.current_page == 'perform_audit':
             st.session_state['active_learning_algo'] = algos.EmbeddingsSampling(st.session_state['prompt_data_embeddings'])
             st.session_state['active_learning_algo'].update(0)
             st.session_state['curve_fitting_algo'] = algos.CosineSimFit(st.session_state['prompt_data_embeddings'])
-            st.session_state['auto_classifier'] = automated_classifiers.get_auto_classifier(st.session_state.evaluation_metrics[0])
+            st.session_state['auto_classifier'] = automated_classifiers.get_auto_classifier(st.session_state.metric)
             st.session_state['eval_model'] = models.get_eval_model()
     page_perform_audit()
     st.session_state.prev_page = 'perform_audit'

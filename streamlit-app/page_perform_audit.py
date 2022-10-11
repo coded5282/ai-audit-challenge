@@ -5,6 +5,7 @@ import models as models
 import numpy as np
 import itertools
 import matplotlib.pyplot as plt
+from persist import persist, load_widget_state
 
 # On click functions
 def back_to_settings_on_click():
@@ -106,7 +107,7 @@ def obtain_prompt_responses_and_scores_v3(curr_group, curr_subgroup, subgroup_id
     num_responses = len(model_response)
     classifier_scores = obtain_auto_classifier_scores(model_response, st.session_state.auto_classifier)
     # classifier_scores = list(st.session_state['prompt_data'][st.session_state.curr_prompt_idx]['toxicity_{}'.format(subgroup_idx+1)][0])
-    return classifier_scores, model_response, num_responses, None
+    return full_prompt, classifier_scores, model_response, num_responses, None
 
 def create_restaurant_review_prompt(name, adjs_list):
     prompt = 'Write a restaurant review based on these notes:\n\n'
@@ -115,14 +116,17 @@ def create_restaurant_review_prompt(name, adjs_list):
     prompt += 'Review:'
     return prompt
 
-def create_automated_score_plot(scores_list, subgroup_name):
+def create_automated_score_plot(scores_lists, subgroup_name, subgroup_idx):
+    max_score = 0
+    for scores_list in scores_lists:
+        max_score = max(max_score, max(scores_list))
     response_ids = [i for i in range(len(scores_list))]
     fig, ax = plt.subplots()
-    ax.bar(response_ids, sorted(scores_list))
+    ax.bar(response_ids, sorted(scores_lists[subgroup_idx]))
     ax.set_title('Automated Scores By Response ({})'.format(subgroup_name))
     ax.set_xlabel('Response')
-    ax.set_ylabel('Automated Score')
-    ax.set_ylim((0, 1.0))
+    ax.set_ylabel('Automated {} Score'.format(st.session_state.metric))
+    ax.set_ylim((0, max_score))
     return fig
 
 # TEMPORARY SOLUTION
@@ -141,7 +145,7 @@ def cycle_through_all_prompts(curr_group, curr_subgroup):
 # Page display function
 def page_perform_audit():
     st.title('AI Audit')
-    st.header('Please select the side (left/right) that you believe is associated with a higher value of {} (or equal if they are about the same)'.format(st.session_state.evaluation_metrics[0]))
+    st.header('Please select the side (left/right) that you believe is associated with a higher value of {} (or equal if they are about the same).'.format(st.session_state.metric))
 
     if 'curr_prompt_idx' not in st.session_state:
         st.session_state.curr_prompt_idx = 0
@@ -162,6 +166,7 @@ def page_perform_audit():
         col2.button('Left', on_click=curr_preference_on_click, args=(0, curr_group, curr_subgroups))
         col2.button('Equal', on_click=curr_preference_on_click, args=(-1, curr_group, curr_subgroups))
         col2.button('Right', on_click=curr_preference_on_click, args=(1, curr_group, curr_subgroups))
+        classifier_scores_list = []
         for i in range(num_prompts):
             curr_subgroup = curr_subgroups[i]
             if curr_subgroups[i] not in st.session_state.idx2labels[curr_group]:
@@ -171,23 +176,31 @@ def page_perform_audit():
                 # cycle_through_all_prompts(curr_group, curr_subgroup) # TEMPORARY SOLUTION
                 # classifier_scores, model_response, num_responses, response_metric = obtain_prompt_responses_and_scores_v1(curr_group, curr_subgroup)
                 # classifier_scores, model_response, num_responses, response_metric = obtain_prompt_responses_and_scores_v2(curr_group, curr_subgroup, i)
-                classifier_scores, model_response, num_responses, _ = obtain_prompt_responses_and_scores_v3(curr_group, curr_subgroup, i)
-
-                automated_scores_fig = create_automated_score_plot(classifier_scores, curr_subgroup)
-                # TEMPORARY: Currently only taking into consideration automated metrics, but should use user rank later
-                # st.session_state.user_ranks[curr_group][curr_subgroup].append(int(response_metric*100))
+                full_prompt, classifier_scores, model_responses, num_responses, _ = obtain_prompt_responses_and_scores_v3(curr_group, curr_subgroup, i)
+                model_responses = [x for _, x in sorted(zip(classifier_scores, model_responses), key=lambda pair: pair[0])] # sort based on classifier scores
+                full_prompt = full_prompt.replace('\n\n', '   \n')
+                classifier_scores_list.append(classifier_scores)
                 if i == 0: # prompt on the left
+                    col1.write('**_Prompt_**')
+                    col1.markdown(full_prompt)
                     for response_idx in range(num_responses):
-                        col1.write('{}. {}'.format(response_idx+1, model_response[response_idx]))
-                    col1.pyplot(automated_scores_fig)
+                        col1.write('**_Response {}_**'.format(response_idx))
+                        col1.write('{}. {}'.format(response_idx, model_responses[response_idx]))
                 elif i == 1: # prompt on the right
+                    col3.write('**_Prompt_**')
+                    col3.write(full_prompt)
                     for response_idx in range(num_responses):
-                        col3.write('{}. {}'.format(response_idx+1, model_response[response_idx]))
-                    col3.pyplot(automated_scores_fig)
-                # col2.metric(label='Automated Score', value=response_metric)
-                # curr_rank = col3.selectbox('Rank', [1, 2], key='rank_{}_{}'.format(i, curr_group))
+                        col3.write('**_Response {}_**'.format(response_idx))
+                        col3.write('{}. {}'.format(response_idx, model_responses[response_idx]))
         
         # col3.button('Next', key='next_{}'.format(curr_group), on_click=curr_tab_next_on_click, args=(curr_group, curr_subgroups))
+        for i in range(num_prompts):
+            curr_subgroup = curr_subgroups[i]
+            automated_scores_fig = create_automated_score_plot(classifier_scores_list, curr_subgroup, i)
+            if i == 0:
+                col1.pyplot(automated_scores_fig)
+            elif i == 1:
+                col3.pyplot(automated_scores_fig)
 
     page_col1, page_col2 = st.columns((2, 0.40))
     page_col1.button('Back To Settings', on_click=back_to_settings_on_click)
