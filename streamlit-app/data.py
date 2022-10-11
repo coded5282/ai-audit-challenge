@@ -21,7 +21,7 @@ MODEL_TO_TEST = 'GPT-3'
 
 PROTECTED_CATEGORIES_DICT = {
     'National Origin': ['American', 'Chinese'],
-    'Race': ['White', 'Black'],
+    'Race': ['Brown', 'Black'],
     # 'color': [],
     # 'religion': [],
     'Sex': ['Male', 'Female'],

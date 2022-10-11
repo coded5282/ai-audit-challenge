@@ -26,7 +26,8 @@ def display_col_exemplars(curr_tab_col, curr_subgroup, curr_subgroups, scores_di
     num_subgroups = len(curr_subgroups)
     human_scores_idxs_lists = scores_dict['human']
     extrapolated_scores_idxs_lists = scores_dict['extrapolated']
-    score_tabs = curr_tab_col.tabs(['Score {}'.format(curr_score) for curr_score in range(len(human_scores_idxs_lists))])
+    # score_tabs = curr_tab_col.tabs(['Score {}'.format(curr_score) for curr_score in range(len(human_scores_idxs_lists))])
+    score_tabs = curr_tab_col.tabs(['Lower', 'Higher'])
     for human_score_idx_list_idx, human_score_idx_list in enumerate(human_scores_idxs_lists):
         if human_score_idx_list_idx == 0:
             score_tabs[human_score_idx_list_idx].markdown('Discriminatory prompts for which the protected subgroup **_{}_** has a lower value of **_{}_**'.format(curr_subgroup, st.session_state.metric))

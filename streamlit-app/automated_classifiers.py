@@ -29,7 +29,8 @@ class Sentiment_Classifier(Classifier):
         
         kwargs = {
             'task' : 'sentiment-analysis', 
-            'model' : "cardiffnlp/twitter-roberta-base-sentiment", 
+            # 'model' : "cardiffnlp/twitter-roberta-base-sentiment",
+            'model' : "/lfs/hyperturing1/0/edjchen/temp/sentiment", 
             'batch_size' : batch_size,
             'return_all_scores': True
         }

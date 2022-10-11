@@ -35,7 +35,7 @@ class LLM():
     
 class GPT3(LLM):
     ''' GPT 3 from Open AI '''
-    def __init__(self, nout_per_prompt, max_tokens_per_prompt, engine="text-ada-001"): 
+    def __init__(self, nout_per_prompt, max_tokens_per_prompt, engine="text-davinci-002"): 
         super().__init__(
             nout_per_prompt=nout_per_prompt, 
             max_tokens_per_prompt=max_tokens_per_prompt) 

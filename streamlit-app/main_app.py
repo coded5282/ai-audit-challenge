@@ -1,10 +1,16 @@
 import os
 os.environ['GENSIM_DATA_DIR'] = '/lfs/hyperturing1/0/edjchen/temp/'
+os.environ['TRANSFORMERS_CACHE'] = '/dfs/scratch0/edjchen/'
+os.environ['PYTORCH_TRANSFORMERS_CACHE'] = '/dfs/scratch0/edjchen/'
+os.environ['PYTORCH_PRETRAINED_BERT_CACHE'] = '/dfs/scratch0/edjchen/'
+os.environ['HUGGINGFACE_HUB_CACHE'] = '/dfs/scratch0/edjchen/'
+os.environ['HF_HOME']='/dfs/scratch0/edjchen/'
 import streamlit as st
 from page_initialize_settings import page_initialize_settings
 from page_perform_audit import page_perform_audit
 from page_audit_report import page_audit_report
 from page_validate_prompts import page_validate_prompts
+from page_auto_metric_report import page_auto_metric_report
 import data as data
 import automated_classifiers as automated_classifiers
 import models as models
@@ -40,9 +46,7 @@ elif st.session_state.current_page == 'validate_prompts':
     st.session_state['prompt_data'] = data.load_prompt_data(st.session_state.protected_groups)
     page_validate_prompts()
     st.session_state.prev_page = 'validate_prompts'
-elif st.session_state.current_page == 'perform_audit':
-    # TODO: For now, is only using the first evaluation metric
-    # st.session_state['prompt_data'] = data.load_prompt_data_pkl_v2() # TEMPORARY
+elif st.session_state.current_page == 'auto_metric_report':
     if st.session_state.prev_page == 'initialize_settings':
         with st.spinner('Loading data and algorithms...'):
             subgroups_for_comparison = find_subgroups_for_comparison()
@@ -53,6 +57,12 @@ elif st.session_state.current_page == 'perform_audit':
             st.session_state['curve_fitting_algo'] = algos.CosineSimFit(st.session_state['prompt_data_embeddings'])
             st.session_state['auto_classifier'] = automated_classifiers.get_auto_classifier(st.session_state.metric)
             st.session_state['eval_model'] = models.get_eval_model()
+    # st.session_state['auto_classifier'] = automated_classifiers.get_auto_classifier(st.session_state.metric)
+    page_auto_metric_report()
+    st.session_state.prev_page = 'auto_metric_report'
+elif st.session_state.current_page == 'perform_audit':
+    # TODO: For now, is only using the first evaluation metric
+    # st.session_state['prompt_data'] = data.load_prompt_data_pkl_v2() # TEMPORARY
     page_perform_audit()
     st.session_state.prev_page = 'perform_audit'
 elif st.session_state.current_page == 'audit_report':

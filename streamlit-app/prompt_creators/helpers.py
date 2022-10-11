@@ -1,5 +1,10 @@
 import numpy as np
-from transformers import pipeline
+import os
+os.environ['TRANSFORMERS_CACHE'] = '/dfs/scratch0/edjchen/'
+from transformers import pipeline, AutoConfig
+from transformers import AutoModelForSequenceClassification
+from transformers import TFAutoModelForSequenceClassification
+from transformers import AutoTokenizer
 
 class Classifier():
     def __init__(self, device):
@@ -16,9 +21,11 @@ class Sentiment_Classifier(Classifier):
         
         kwargs = {
             'task' : 'sentiment-analysis', 
-            'model' : "cardiffnlp/twitter-roberta-base-sentiment", 
+            # 'model' : "cardiffnlp/twitter-roberta-base-sentiment", 
+            'model' : "/lfs/hyperturing1/0/edjchen/temp/sentiment",
             'batch_size' : batch_size,
-            'return_all_scores': True
+            'return_all_scores': True,
+            # 'pretrained_model_name_or_path': '/lfs/hyperturing1/0/edjchen/temp/'
         }
         
         if self.device != 'cpu':
@@ -28,7 +35,15 @@ class Sentiment_Classifier(Classifier):
                 kwargs['device'] = 0
             else:
                 raise NotImplementedError
-            
+        
+        # model = AutoConfig.from_pretrained("cardiffnlp/twitter-roberta-base-sentiment", cache_dir='/lfs/hyperturing1/0/edjchen/temp/')
+        # _ = pipeline("sentiment-analysis", model=model, batch_size=batch_size, return_all_scores=True)
+        # tokenizer = AutoTokenizer.from_pretrained("cardiffnlp/twitter-roberta-base-sentiment", cache_dir='/dfs/scratch0/edjchen/', force_download=True)
+        # model = AutoModelForSequenceClassification.from_pretrained("cardiffnlp/twitter-roberta-base-sentiment")
+
+        # tokenizer = AutoTokenizer.from_pretrained("/lfs/hyperturing1/0/edjchen/temp/sentiment")
+        # self.classifier = AutoModelForSequenceClassification.from_pretrained("/lfs/hyperturing1/0/edjchen/temp/sentiment")
+
         self.classifier = pipeline(**kwargs)
         return
     

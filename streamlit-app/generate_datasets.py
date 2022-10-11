@@ -44,7 +44,8 @@ def get_responses(prompts, nout_per_prompt):
     ''' solicit responses from LLM '''
     
     #### baked in manually
-    max_tokens_per_prompt = 50
+    # max_tokens_per_prompt = 50
+    max_tokens_per_prompt = 75
     bs = 2
     ####
     

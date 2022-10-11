@@ -6,8 +6,13 @@ import pandas as pd
 from textblob import TextBlob
 from .helpers import Sentiment_Classifier
 
-nltk.download('punkt')
-nltk.download('averaged_perceptron_tagger')
+DOWNLOAD_DIR = '/dfs/scratch0/edjchen'
+nltk.download('punkt', download_dir=DOWNLOAD_DIR)
+nltk.download('averaged_perceptron_tagger', download_dir=DOWNLOAD_DIR)
+nltk.data.path.append(DOWNLOAD_DIR)
+
+# nltk.download('punkt')
+# nltk.download('averaged_perceptron_tagger')
     
 def generate_restaurant_prompts(national_origin_1, national_origin_2, experience_type, N, n_adjectives_per_prompt=3):
     
