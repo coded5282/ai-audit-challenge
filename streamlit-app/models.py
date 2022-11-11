@@ -2,7 +2,7 @@
 import openai
 import numpy as np
 
-openai.api_key = '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'
+openai.api_key = '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'
 
 # params for generation
 device_g = 'cpu'
@@ -46,7 +46,7 @@ class LLM():
 # https://beta.openai.com/docs/api-reference/completions/create
 
 class GPT3(LLM):
-    def __init__(self, nout_per_prompt, max_tokens_per_prompt, engine="text-davinci-002"): 
+    def __init__(self, nout_per_prompt, max_tokens_per_prompt, engine="text-ada-001"): 
         super().__init__(
             nout_per_prompt=nout_per_prompt, 
             max_tokens_per_prompt=max_tokens_per_prompt) 

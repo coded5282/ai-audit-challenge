@@ -3,7 +3,7 @@ from text_helpers import *
 
 import numpy as np
 import openai
-openai.api_key = "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"
+openai.api_key = "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"
 
 class LLM():
     ''' Base class for a LLM'''
@@ -35,7 +35,7 @@ class LLM():
     
 class GPT3(LLM):
     ''' GPT 3 from Open AI '''
-    def __init__(self, nout_per_prompt, max_tokens_per_prompt, engine="text-davinci-002"): 
+    def __init__(self, nout_per_prompt, max_tokens_per_prompt, engine="text-ada-001"): 
         super().__init__(
             nout_per_prompt=nout_per_prompt, 
             max_tokens_per_prompt=max_tokens_per_prompt) 
