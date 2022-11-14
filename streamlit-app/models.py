@@ -2,7 +2,7 @@
 import openai
 import numpy as np
 
-openai.api_key = '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'
+openai.api_key = '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'
 
 # params for generation
 device_g = 'cpu'

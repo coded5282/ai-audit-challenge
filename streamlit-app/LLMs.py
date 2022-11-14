@@ -3,7 +3,7 @@ from text_helpers import *
 
 import numpy as np
 import openai
-openai.api_key = "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"
+openai.api_key = "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"
 
 class LLM():
     ''' Base class for a LLM'''
