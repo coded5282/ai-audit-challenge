@@ -1,3 +1,4 @@
 # ai-audit-challenge
 
-To run the Streamlit app, go into the "streamlit-app" root directory and run "streamlit run main\_app.py".
+v\_0: Initial submission
+v\_1: Final submission to AI Audit Challenge
